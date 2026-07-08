@@ -70,13 +70,13 @@ variable "ecs_memory" {
 variable "container_port" {
   description = "Port exposed by the application container."
   type        = number
-  default     = 8080
+  default     = 5000
 }
 
 variable "desired_task_count" {
   description = "Desired number of ECS Tasks."
   type        = number
-  default     = 2
+  default     = 1
 }
 
 #############################################
@@ -98,7 +98,7 @@ variable "db_name" {
 variable "db_username" {
   description = "Master username."
   type        = string
-  default     = "admin"
+  default     = "super_admin"
 }
 
 variable "db_instance_class" {
@@ -130,5 +130,5 @@ variable "health_check_path" {
 variable "log_retention_days" {
   description = "CloudWatch log retention."
   type        = number
-  default     = 7
+  default     = 1
 }

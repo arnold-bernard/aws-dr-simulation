@@ -101,3 +101,8 @@ output "cloudwatch_log_group" {
   description = "CloudWatch Log Group"
   value       = aws_cloudwatch_log_group.ecs.name
 }
+
+output "alb_url" {
+  value       = "http://${aws_lb.main.dns_name}"
+  description = "ALB URL for accessing the application"
+}

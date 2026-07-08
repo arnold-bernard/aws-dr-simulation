@@ -44,7 +44,7 @@ resource "aws_db_instance" "main" {
 
   allocated_storage = var.db_allocated_storage
 
-  storage_type = "gp3"
+  storage_type = "gp2"
 
   storage_encrypted = true
 

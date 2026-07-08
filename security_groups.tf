@@ -90,7 +90,7 @@ resource "aws_security_group_rule" "ecs_from_alb" {
 
 resource "aws_security_group" "rds" {
 
-  name        = "${local.name_prefix}-rds-sg"
+  name = "${local.name_prefix}-rds-sg"
 
   description = "Security Group for PostgreSQL"
 

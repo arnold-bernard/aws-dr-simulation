@@ -94,7 +94,7 @@ resource "aws_ecs_task_definition" "app" {
 
           name = "DB_NAME"
 
-          value = var.db_name
+          value = aws_db_instance.main.db_name
 
         },
 
@@ -102,8 +102,16 @@ resource "aws_ecs_task_definition" "app" {
 
           name = "DB_USER"
 
-          value = var.db_username
+          value = aws_db_instance.main.username
 
+        } ,
+        {
+          name  = "DB_PASSWORD"
+          value = random_password.db.result 
+        },
+         {
+          name  = "AWS_REGION"
+          value = var.aws_region
         }
 
       ]

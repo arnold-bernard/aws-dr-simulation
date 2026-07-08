@@ -98,7 +98,7 @@ resource "aws_iam_role" "ecs_task" {
 
 resource "aws_iam_policy" "ecs_task" {
 
-  name        = "${local.name_prefix}-ecs-task-policy"
+  name = "${local.name_prefix}-ecs-task-policy"
 
   description = "Permissions used by the application"
 
