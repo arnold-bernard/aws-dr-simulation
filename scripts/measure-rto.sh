@@ -2,7 +2,7 @@
 set -e
 
 # Get ALB URL from Terraform
-ALB_URL=$(terraform output -raw alb_url)
+ALB_URL="http://dr-simulation-dev-alb-1531759974.us-east-1.elb.amazonaws.com/"
 HEALTH_ENDPOINT="$ALB_URL/health"
 
 echo "📈 Starting RTO Measurement..."
