@@ -1,0 +1,82 @@
+%% Architecture diagram for aws-dr-simulation
+%% Services: VPC, Public/Private Subnets, ALB, ECS, ECR, RDS (Multi-AZ), IAM, CloudWatch, Security Groups, Terraform, Scripts, Runbooks
+
+flowchart LR
+  %% Actors
+  Internet[[Internet\n(Users / Testers)]]
+
+  %% Infrastructure boundary
+  subgraph VPC [VPC]
+    direction TB
+    subgraph Public_Subnets [Public Subnets]
+      ALB["ALB\n(Application Load Balancer)"]
+    end
+
+    subgraph Private_Subnets [Private Subnets]
+      ECSCluster["ECS Cluster\n(Service + Tasks)"]
+      ECSTask["ECS Task\n(Flask App)"]
+      ECR["ECR\n(Container Registry)"]
+      subgraph RDS_AZ1 [RDS Multi-AZ]
+        RDSPrimary[("RDS Postgres\nPrimary")]
+        RDSStandby[("RDS Postgres\nStandby")]
+      end
+    end
+
+    NAT["NAT Gateway"]
+  end
+
+  %% Observability & IAM
+  CloudWatch["CloudWatch\nMetrics & Logs"]
+  IAM["IAM Roles & Policies"]
+
+  %% IaC and artifacts
+  Terraform["Terraform\n(Infrastructure as Code)"]
+  Scripts["scripts/\n(simulate-az-failure.sh, measure-rto.sh)"]
+  Runbooks["runbooks/\n(initial-assumptions.md)"]
+
+  %% Security
+  SGs["Security Groups\n(ALB-SG, ECS-SG, RDS-SG)"]
+
+  %% Connections
+  Internet -->|HTTP/HTTPS| ALB
+  ALB -->|Targets / Health checks| ECSTask
+  ECSCluster --> ECSTask
+  ECSTask -->|pull image| ECR
+  ECSTask -->|connects (5432)| RDSPrimary
+  ECSTask -->|connects (read replica / failover)| RDSStandby
+  RDSPrimary ---|replication / failover| RDSStandby
+
+  ALB --> CloudWatch
+  ECSTask --> CloudWatch
+  RDSPrimary --> CloudWatch
+
+  Terraform --> ALB
+  Terraform --> ECSCluster
+  Terraform --> ECR
+  Terraform --> RDSPrimary
+  Terraform --> IAM
+  Terraform --> SGs
+
+  Scripts --> ECSCluster
+  Scripts --> RDSPrimary
+  Runbooks --> Scripts
+
+  SGs --> ALB
+  SGs --> ECSTask
+  SGs --> RDSPrimary
+
+  IAM --> ECSTask
+  IAM --> Terraform
+
+  %% Styling hints (keeps diagram readable)
+  classDef infra fill:#f3f4f6,stroke:#333,stroke-width:1px
+  class VPC,Public_Subnets,Private_Subnets infra
+
+  %% Notes
+  subgraph Notes [Notes]
+    direction TB
+    Note1["- ALB in public subnets\n- ECS & RDS in private subnets"]
+    Note2["- RDS configured Multi-AZ (Primary + Standby).\n- Use Secrets Manager for credentials in production."]
+  end
+
+  Notes --- Terraform
