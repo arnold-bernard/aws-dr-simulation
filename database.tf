@@ -4,8 +4,12 @@
 
 resource "random_password" "db" {
 
-  length  = 16
-  special = true
+  length            = 24
+  special           = true
+  override_special  = "!#$%&*()-_=+[]{}:;.,?~`^"
+  upper             = true
+  lower             = true
+  numeric           = true
 
 }
 
