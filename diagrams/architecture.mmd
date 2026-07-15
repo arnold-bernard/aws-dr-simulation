@@ -3,39 +3,37 @@
 
 flowchart LR
   %% Actors
-  Internet[[Internet\n(Users / Testers)]]
+  Internet["Internet<br/>Users / Testers"]
 
   %% Infrastructure boundary
-  subgraph VPC [VPC]
+  subgraph VPC[VPC]
     direction TB
-    subgraph Public_Subnets [Public Subnets]
-      ALB["ALB\n(Application Load Balancer)"]
+    subgraph Public[Public Subnets]
+      ALB["ALB<br/>Application Load Balancer"]
     end
 
-    subgraph Private_Subnets [Private Subnets]
-      ECSCluster["ECS Cluster\n(Service + Tasks)"]
-      ECSTask["ECS Task\n(Flask App)"]
-      ECR["ECR\n(Container Registry)"]
-      subgraph RDS_AZ1 [RDS Multi-AZ]
-        RDSPrimary[("RDS Postgres\nPrimary")]
-        RDSStandby[("RDS Postgres\nStandby")]
-      end
+    subgraph Private[Private Subnets]
+      ECSCluster["ECS Cluster<br/>Service + Tasks"]
+      ECSTask["ECS Task<br/>Flask App"]
+      ECR["ECR<br/>Container Registry"]
+      RDSPrimary["RDS Postgres<br/>Primary (Multi-AZ)"]
+      RDSStandby["RDS Postgres<br/>Standby (Multi-AZ)"]
     end
 
     NAT["NAT Gateway"]
   end
 
   %% Observability & IAM
-  CloudWatch["CloudWatch\nMetrics & Logs"]
+  CloudWatch["CloudWatch<br/>Metrics & Logs"]
   IAM["IAM Roles & Policies"]
 
   %% IaC and artifacts
-  Terraform["Terraform\n(Infrastructure as Code)"]
-  Scripts["scripts/\n(simulate-az-failure.sh, measure-rto.sh)"]
-  Runbooks["runbooks/\n(initial-assumptions.md)"]
+  Terraform["Terraform<br/>Infrastructure as Code"]
+  Scripts["scripts/<br/>simulate-az-failure.sh<br/>measure-rto.sh"]
+  Runbooks["runbooks/<br/>initial-assumptions.md"]
 
   %% Security
-  SGs["Security Groups\n(ALB-SG, ECS-SG, RDS-SG)"]
+  SGs["Security Groups<br/>ALB-SG, ECS-SG, RDS-SG"]
 
   %% Connections
   Internet -->|HTTP/HTTPS| ALB
@@ -68,15 +66,11 @@ flowchart LR
   IAM --> ECSTask
   IAM --> Terraform
 
-  %% Styling hints (keeps diagram readable)
-  classDef infra fill:#f3f4f6,stroke:#333,stroke-width:1px
-  class VPC,Public_Subnets,Private_Subnets infra
-
   %% Notes
-  subgraph Notes [Notes]
+  subgraph Notes[Notes]
     direction TB
-    Note1["- ALB in public subnets\n- ECS & RDS in private subnets"]
-    Note2["- RDS configured Multi-AZ (Primary + Standby).\n- Use Secrets Manager for credentials in production."]
+    Note1["- ALB in public subnets<br/>- ECS & RDS in private subnets"]
+    Note2["- RDS configured Multi-AZ (Primary + Standby).<br/>- Use Secrets Manager for credentials in production."]
   end
 
   Notes --- Terraform
