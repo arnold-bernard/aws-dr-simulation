@@ -36,13 +36,13 @@ flowchart LR
   SGs["Security Groups<br/>ALB-SG, ECS-SG, RDS-SG"]
 
   %% Connections
-  Internet -->|HTTP/HTTPS| ALB
-  ALB -->|Targets / Health checks| ECSTask
+  Internet -->|HTTP-HTTPS| ALB
+  ALB -->|Targets & Health| ECSTask
   ECSCluster --> ECSTask
   ECSTask -->|pull image| ECR
-  ECSTask -->|connects (5432)| RDSPrimary
-  ECSTask -->|connects (read replica / failover)| RDSStandby
-  RDSPrimary ---|replication / failover| RDSStandby
+  ECSTask -->|connects port 5432| RDSPrimary
+  ECSTask -->|connects replica/failover| RDSStandby
+  RDSPrimary ---|replication-failover| RDSStandby
 
   ALB --> CloudWatch
   ECSTask --> CloudWatch
@@ -64,6 +64,7 @@ flowchart LR
   SGs --> RDSPrimary
 
   IAM --> ECSTask
+
   IAM --> Terraform
 
   %% Notes
